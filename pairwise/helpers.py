@@ -2,6 +2,9 @@ import numpy as np
 
 LABEL_SET_1 = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2])
 CLUSTER_SET_1 = np.array([0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 2, 2, 1, 2, 2, 2])
+
+LABEL_SET_2 = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2])
+CLUSTER_SET_2 = np.array([-1, 1, 1, 1, 1, -1, -1, -1, -1, -1, 1, 2, 2, 1, 2, 2, 2])
 ###
 # Test data and expected solutions.
 ###
@@ -10,7 +13,7 @@ DATA_SET_A = {
     "YP": CLUSTER_SET_1,                                 # assigned cluster ID
     "stats":{'TP': 20, 'TN': 72, 'FP': 20, 'FN': 24},   # resulting confusion stats
     "P": 0.5,                                           # pairwise precision
-    "R": 0.455,                                         # pairwise recall
+    "R": 0.45454545454545453,                                         # pairwise recall
     "Purity": 0.71,                                     # purity measure
     "NMI": 0.36,                                        # normalized mutual information
     "RI": 0.68,                                         # Random index
