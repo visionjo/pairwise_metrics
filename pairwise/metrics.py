@@ -99,6 +99,71 @@ def precision(true_ids, cluster_ids):
     return stats
 
 
+def recall(true_ids, cluster_ids):
+    """
+    Calculate recall of the ith cluster w.r.t. clabels. Ground-truth is used to determine the observations from the same
+    class (identity) and, hence, should be clustered together.
+    :param ids:
+    :param clabels:
+    :return:
+    """
+
+
+
+    stats = {}
+    nclasses = len(np.unique(true_labels) )  # unique class labels
+
+    # get list of cluster IDs and number of unique assignments (i.e., cluster count)
+    clusters = np.unique(cluster_ids)
+    k_predicted  = len(clusters)                  # number of clusters
+
+    # Determine number of samples for each class, i.e., how many should be assigned to cluster for a given class labels.
+    nsamples_per_cluster, _ =np.histogram(cluster_ids, range(k_predicted + 1))
+    nsamples_per_class, _ = np.histogram(true_ids, range(nclasses + 1))
+    N = len(true_labels)   # total number of observations
+
+    npairs = nchoosek(N, 2)
+    npairs_per_class = [int(nchoosek(val, 2)) for val in nsamples_per_class]
+
+    if k_predicted == 1:
+        # All samples assigned to a single cluster
+        stats['r_e'] = 1
+        stats['tnpairs'] = N
+        stats['recall'] = 1
+        stats['AR'] = 1
+        return stats
+
+    total_positive = 0
+    # total_expected_positives = 0
+    for nsamples in nsamples_per_cluster:
+        # determine the number of positive predictions (i.e., TP + FP) to later calculate FP
+        total_positive += nchoosek(nsamples, 2)
+
+
+    classes = {}
+    for k, cluster_id in enumerate(clusters):
+        # for each cluster index items assigned to kth cluster
+        ids = true_ids == cluster_id
+        # determine true labels for items
+        classes[cluster_id] = np.sort(cluster_ids[ids])
+
+    stats['TP'] = 0
+    for label, assignments in classes.items():
+        categories = np.unique(assignments)
+        for category in categories:
+            flag_ids = category == assignments
+            npresent = sum(flag_ids)
+            if npresent > 1:
+                # if more than single sample for given class in respective cluster
+                stats['TP'] += nchoosek(npresent, 2)
+
+    stats['FP'] = total_positive - stats['TP']
+    stats['FN'] = sum(npairs_per_class) - stats['TP']
+
+    stats['TN'] = npairs - stats['FP'] - stats['TP'] - stats['FN']
+    stats['recall'] = stats['TP']/(stats['TP'] + stats['FN'])
+    return stats
+
 if __name__ == '__main__':
     sample_clusters = np.array([0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 2, 2, 1, 2, 2, 2])
     N = len(sample_clusters)
@@ -110,5 +175,5 @@ if __name__ == '__main__':
     stats = {}
     print('Cluster {} samples into {} clusters from {} classes'.format(N, k, len(classes)))
     stats['precision'] = precision(true_labels, sample_clusters)
-    # stats['recall'] = recall(true_labels, sample_clusters)
+    stats['recall'] = recall(true_labels, sample_clusters)
     print(stats)
