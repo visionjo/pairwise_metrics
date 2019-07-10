@@ -1,5 +1,6 @@
 import numpy as np
 import pairwise.helpers as helpers
+from sklearn.preprocessing import LabelEncoder
 # Calculate pair-wise metrics.
 #
 # Note, all metrics handle pairwise relationships (i.e., counting pairs)
@@ -46,6 +47,12 @@ def calculate_tp(sample_assignments):
     raise NotImplemented
 
 
+def label_encoder(labels):
+    le = LabelEncoder()
+    le.fit(labels)
+    return le.transform(labels)
+
+
 def confusion_matrix_values(true_ids, cluster_ids):
     """
     Calculate TP, FP, TN, and FN and store in dictionary container.
@@ -53,6 +60,8 @@ def confusion_matrix_values(true_ids, cluster_ids):
     :param clabels:     Cluster assignment [ Nx1 ].
     :return: Confusion stats {TP, FP, TN, FN} (dictionary)
     """
+    true_ids = label_encoder(true_ids)
+    cluster_ids = label_encoder(cluster_ids)
     stats = {}
     stats['TP'] = 0
     classes = {}
