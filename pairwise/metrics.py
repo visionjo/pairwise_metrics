@@ -69,9 +69,9 @@ def confusion_matrix_values(true_ids, cluster_ids):
     stats['TP'] = 0
     classes = {}
     cluster_refs = np.unique(cluster_ids)
-    nclasses = len(np.unique(true_labels))
+    nclasses = len(np.unique(true_ids))
 
-    nsamples_per_class, _ = np.histogram(true_labels, range(nclasses + 1))
+    nsamples_per_class, _ = np.histogram(true_ids, range(nclasses + 1))
     npairs_per_class = [nchoosek(val, 2) for val in nsamples_per_class]
     for k, cluster_id in enumerate(cluster_refs):
         # for each cluster index items assigned to kth cluster
@@ -155,7 +155,7 @@ def recall(true_ids, cluster_ids):
     """
 
     stats = {}
-    nclasses = len(np.unique(true_labels))  # unique class labels
+    nclasses = len(np.unique(true_ids))  # unique class labels
 
     # get list of cluster IDs and number of unique assignments (i.e., cluster count)
     clusters = np.unique(cluster_ids)
@@ -164,7 +164,7 @@ def recall(true_ids, cluster_ids):
     # Determine number of samples for each class, i.e., how many should be assigned to cluster for a given class labels.
     nsamples_per_cluster, _ = np.histogram(cluster_ids, range(k_predicted + 1))
     nsamples_per_class, _ = np.histogram(true_ids, range(nclasses + 1))
-    N = len(true_labels)  # total number of observations
+    N = len(true_ids)  # total number of observations
 
     npairs = nchoosek(N, 2)
     npairs_per_class = [int(nchoosek(val, 2)) for val in nsamples_per_class]
