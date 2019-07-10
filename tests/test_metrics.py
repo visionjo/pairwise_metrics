@@ -29,3 +29,30 @@ def test_confusion_stats():
     for key in stats.keys():
         print("[ CHECK ] : {}".format(key))
         assert stats[key] == helpers.DATA_SET_A['stats'][key]
+
+
+def test_f1score():
+    """
+    Test pairwise.metrics.f1score()
+    :return:
+    """
+    print("[ CHECK ] : {}".format("F1-Score"))
+    assert metrics.f1score(helpers.DATA_SET_A['Y'], helpers.DATA_SET_A['YP']) == helpers.DATA_SET_A['F1']
+
+
+def test_accuracy():
+    """
+    Test pairwise.metrics.accuracy()
+    :return:
+    """
+    print("[ CHECK ] : {}".format("Accuracy"))
+    assert metrics.accuracy(helpers.DATA_SET_A['Y'], helpers.DATA_SET_A['YP']) == helpers.DATA_SET_A['Acc']
+
+
+def test_specificity():
+    """
+    Test pairwise.metrics.specificity()
+    :return:
+    """
+    print("[ CHECK ] : {}".format("Specificity"))
+    pass

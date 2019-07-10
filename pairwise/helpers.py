@@ -13,11 +13,14 @@ DATA_SET_A = {
     "YP": CLUSTER_SET_1,                                 # assigned cluster ID
     "stats":{'TP': 20, 'TN': 72, 'FP': 20, 'FN': 24},   # resulting confusion stats
     "P": 0.5,                                           # pairwise precision
-    "R": 0.45454545454545453,                                         # pairwise recall
+    "R": 0.45454545454545453,
+    "Specificity": 0.782608695652174,# pairwise recall
     "Purity": 0.71,                                     # purity measure
     "NMI": 0.36,                                        # normalized mutual information
-    "RI": 0.68,                                         # Random index
-    "F5": 0.46,                                         # F-5 score
+    "RI": 0.6764705882352942,                                         # Random index
+    "Acc": 0.6764705882352942,                                         # Random index
+    "F5": 0.456,
+    "F1": 0.47619047619047616,# F-5 score
     "K": len(np.unique(CLUSTER_SET_1)),                  # Number of clusters
     "N": len(LABEL_SET_1),                               # Number of samples
     "NC": len(np.unique(LABEL_SET_1)),                   # Number of classes
