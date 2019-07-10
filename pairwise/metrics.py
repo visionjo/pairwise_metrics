@@ -65,7 +65,7 @@ def confusion_matrix_values(true_ids, cluster_ids):
     Calculate TP, FP, TN, and FN and store in dictionary container.
     :param true_ids:    Ground-truth label [ Nx1 ].
     :param clabels:     Cluster assignment [ Nx1 ].
-    :return:
+    :return: Confusion stats {TP, FP, TN, FN} (dictionary)
     """
     stats = {}
     stats['TP'] = 0
@@ -106,10 +106,13 @@ def precision(true_ids, cluster_ids):
     """
     Calculate precision of the ith cluster w.r.t. assigned clusterins. True labels are used to determine those from same
     class and, hence, should be clustered together. It is assumed all N samples are clustered.
+
+    Precision (P): How accurate are the positive predictions.
+
     Precision = TP / (TP + FP) (per class)
     :param true_ids:    Ground-truth label [ Nx1 ].
     :param clabels:     Cluster assignment [ Nx1 ].
-    :return:
+    :return: Precision value (float)
     """
 
     stats = confusion_matrix_values(true_ids, cluster_ids)
@@ -121,13 +124,55 @@ def recall(true_ids, cluster_ids):
     Calculate recall of the ith cluster w.r.t. clabels. Ground-truth is used to determine the observations from the same
     class (identity) and, hence, should be clustered together.
 
-    Recall = TP / (TP + FN)
+    Recall (R): Coverage of actual positive sample.
+
+    R = TP / (TP + FN)
+
+    :param true_ids:    Ground-truth label [ Nx1 ].
+    :param cluster_ids: Cluster assignment [ Nx1 ].
+    :return: Recall value (float)
+    """
+    stats = confusion_matrix_values(true_ids, cluster_ids)
+
+    return stats['TP'] / (stats['TP'] + stats['FN'])
+
+
+def accuracy(true_ids, cluster_ids):
+    """
+    Calculate accuracy.
+
+    Accuracy (Acc): Overall performance of model
+
+    Acc = (TP + TN) / (TP + FP + FN + TN)
     :param true_ids:    Ground-truth label [ Nx1 ].
     :param cluster_ids: Cluster assignment [ Nx1 ].
     :return:
     """
-    stats = confusion_matrix_values(true_ids, cluster_ids)
-    return stats['TP'] / (stats['TP'] + stats['FN'])
+    raise NotImplemented
+
+
+def specificity(true_ids, cluster_ids):
+    """
+    Calculate specificity: Coverage of actual negative sample.
+
+    Recall = TN / (TN + FP)
+    :param true_ids:    Ground-truth label [ Nx1 ].
+    :param cluster_ids: Cluster assignment [ Nx1 ].
+    :return:
+    """
+    raise NotImplemented
+
+
+def f1score(true_ids, cluster_ids):
+    """
+    Calculate F1-score: Hybrid metric useful for unbalanced classes.
+
+    Recall = 2TP / (2TP + FP + FN)
+    :param true_ids:    Ground-truth label [ Nx1 ].
+    :param cluster_ids: Cluster assignment [ Nx1 ].
+    :return:
+    """
+    raise NotImplemented
 
 
 if __name__ == '__main__':
