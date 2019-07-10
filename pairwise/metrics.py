@@ -36,6 +36,8 @@ import numpy as np
 # @author Joseph P. Robinson
 # @date 2019 July 12
 from math import factorial
+
+
 def nchoosek(n, k):
     """
     Determines number of combinations from expressions of form n choose k.
@@ -56,6 +58,48 @@ def calculate_tp(sample_assignments):
     """
     raise NotImplemented
 
+def confusion_matrix_values(true_ids, cluster_ids):
+    """
+    Calculate TP, FP, TN, and FN and store in dictionary container.
+    :param true_ids:    Ground-truth label [ Nx1 ].
+    :param clabels:     Cluster assignment [ Nx1 ].
+    :return:
+    """
+    stats = {}
+    stats['TP'] = 0
+    classes = {}
+    cluster_refs = np.unique(cluster_ids)
+    nclasses = len(np.unique(true_labels))
+
+    nsamples_per_class, _ = np.histogram(true_labels, range(nclasses + 1))
+    npairs_per_class = [nchoosek(val, 2) for val in nsamples_per_class]
+    for k, cluster_id in enumerate(cluster_refs):
+        # for each cluster index items assigned to kth cluster
+        ids = true_ids == cluster_id
+        # determine true labels for items
+        classes[cluster_id] = np.sort(cluster_ids[ids])
+
+    for label, assignments in classes.items():
+        categories = np.unique(assignments)
+        for category in categories:
+            flag_ids = category == assignments
+            npresent = sum(flag_ids)
+            if npresent > 1:
+                # if more than single sample for given class in respective cluster
+                stats['TP'] += nchoosek(npresent, 2)
+
+    nsamples_per_cluster, _ = np.histogram(cluster_ids, range(len(cluster_refs) + 1))
+    total_positive = sum(nchoosek(val, 2) for val in nsamples_per_cluster)
+
+    stats['FP'] = total_positive - stats['TP']
+
+    stats['FN'] = sum(npairs_per_class) - stats['TP']
+
+    stats['TN'] = nchoosek(len(true_ids), 2) - stats['FP'] - stats['TP'] - stats['FN']
+
+    return stats
+
+
 def precision(true_ids, cluster_ids):
     """
     Calculate precision of the ith cluster w.r.t. assigned clusterins. True labels are used to determine those from same
@@ -68,10 +112,10 @@ def precision(true_ids, cluster_ids):
     stats = {}
     # get list of cluster IDs and number of unique assignments (i.e., cluster count)
     clusters = np.unique(cluster_ids)
-    k_predicted  = len(clusters)                  # number of clusters
+    k_predicted = len(clusters)  # number of clusters
 
     # Determine number of samples for each class, i.e., how many should be assigned to cluster for a given class labels.
-    nsamples_per_cluster, _ =np.histogram(cluster_ids, range(k_predicted + 1))
+    nsamples_per_cluster, _ = np.histogram(cluster_ids, range(k_predicted + 1))
 
     total_positive = 0
     for nsamples in nsamples_per_cluster:
@@ -95,7 +139,7 @@ def precision(true_ids, cluster_ids):
                 # if more than single sample for given class in respective cluster
                 stats['TP'] += nchoosek(npresent, 2)
     stats['FP'] = total_positive - stats['TP']
-    stats['precision'] = stats['TP']/(stats['TP'] + stats['FP'])
+    stats['precision'] = stats['TP'] / (stats['TP'] + stats['FP'])
     return stats
 
 
@@ -103,24 +147,24 @@ def recall(true_ids, cluster_ids):
     """
     Calculate recall of the ith cluster w.r.t. clabels. Ground-truth is used to determine the observations from the same
     class (identity) and, hence, should be clustered together.
-    :param ids:
-    :param clabels:
+
+    Recall = TP / (TP + FN)
+    :param true_ids:    Ground-truth label [ Nx1 ].
+    :param cluster_ids: Cluster assignment [ Nx1 ].
     :return:
     """
 
-
-
     stats = {}
-    nclasses = len(np.unique(true_labels) )  # unique class labels
+    nclasses = len(np.unique(true_labels))  # unique class labels
 
     # get list of cluster IDs and number of unique assignments (i.e., cluster count)
     clusters = np.unique(cluster_ids)
-    k_predicted  = len(clusters)                  # number of clusters
+    k_predicted = len(clusters)  # number of clusters
 
     # Determine number of samples for each class, i.e., how many should be assigned to cluster for a given class labels.
-    nsamples_per_cluster, _ =np.histogram(cluster_ids, range(k_predicted + 1))
+    nsamples_per_cluster, _ = np.histogram(cluster_ids, range(k_predicted + 1))
     nsamples_per_class, _ = np.histogram(true_ids, range(nclasses + 1))
-    N = len(true_labels)   # total number of observations
+    N = len(true_labels)  # total number of observations
 
     npairs = nchoosek(N, 2)
     npairs_per_class = [int(nchoosek(val, 2)) for val in nsamples_per_class]
@@ -138,7 +182,6 @@ def recall(true_ids, cluster_ids):
     for nsamples in nsamples_per_cluster:
         # determine the number of positive predictions (i.e., TP + FP) to later calculate FP
         total_positive += nchoosek(nsamples, 2)
-
 
     classes = {}
     for k, cluster_id in enumerate(clusters):
@@ -161,8 +204,9 @@ def recall(true_ids, cluster_ids):
     stats['FN'] = sum(npairs_per_class) - stats['TP']
 
     stats['TN'] = npairs - stats['FP'] - stats['TP'] - stats['FN']
-    stats['recall'] = stats['TP']/(stats['TP'] + stats['FN'])
+    stats['recall'] = stats['TP'] / (stats['TP'] + stats['FN'])
     return stats
+
 
 if __name__ == '__main__':
     sample_clusters = np.array([0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 2, 2, 1, 2, 2, 2])
@@ -176,4 +220,5 @@ if __name__ == '__main__':
     print('Cluster {} samples into {} clusters from {} classes'.format(N, k, len(classes)))
     stats['precision'] = precision(true_labels, sample_clusters)
     stats['recall'] = recall(true_labels, sample_clusters)
+    stats['confusion'] = confusion_matrix_values(true_labels, sample_clusters)
     print(stats)
