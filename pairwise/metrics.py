@@ -148,7 +148,9 @@ def accuracy(true_ids, cluster_ids):
     :param cluster_ids: Cluster assignment [ Nx1 ].
     :return:
     """
-    raise NotImplemented
+    stats = confusion_matrix_values(true_ids, cluster_ids)
+
+    return (stats['TP'] + stats['TN']) / (stats['TP'] + stats['FP'] + stats['FN'] + stats['TN'])
 
 
 def specificity(true_ids, cluster_ids):
@@ -160,7 +162,9 @@ def specificity(true_ids, cluster_ids):
     :param cluster_ids: Cluster assignment [ Nx1 ].
     :return:
     """
-    raise NotImplemented
+    stats = confusion_matrix_values(true_ids, cluster_ids)
+
+    return stats['TN'] / (stats['TN'] + stats['FP'])
 
 
 def f1score(true_ids, cluster_ids):
@@ -172,14 +176,18 @@ def f1score(true_ids, cluster_ids):
     :param cluster_ids: Cluster assignment [ Nx1 ].
     :return:
     """
-    raise NotImplemented
+    stats = confusion_matrix_values(true_ids, cluster_ids)
+
+    return 2*stats['TP'] / (2*stats['TP'] + stats['FP'] + stats['FN'])
 
 
 if __name__ == '__main__':
     DATA_SET_A = helpers.DATA_SET_A
-    stats = {}
     print('{} samples in {} clusters from {} classes'.format(DATA_SET_A['N'], DATA_SET_A['K'], DATA_SET_A['NC']))
-    stats['precision'] = precision(DATA_SET_A['Y'], DATA_SET_A['YP'])
-    stats['recall'] = recall(DATA_SET_A['Y'], DATA_SET_A['YP'])
-    stats['confusion'] = confusion_matrix_values(DATA_SET_A['Y'], DATA_SET_A['YP'])
-    print(stats)
+    print('Precision: {} '.format(precision(DATA_SET_A['Y'], DATA_SET_A['YP'])))
+    print('Recall: {} '.format(recall(DATA_SET_A['Y'], DATA_SET_A['YP'])))
+    # stats = confusion_matrix_values(DATA_SET_A['Y'], DATA_SET_A['YP'])
+    # print(stats)
+    print('Accuracy: {} '.format(accuracy(DATA_SET_A['Y'], DATA_SET_A['YP'])))
+    print('Specificity: {} '.format(specificity(DATA_SET_A['Y'], DATA_SET_A['YP'])))
+    print('F1: {} '.format(f1score(DATA_SET_A['Y'], DATA_SET_A['YP'])))
