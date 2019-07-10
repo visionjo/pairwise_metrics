@@ -1,4 +1,5 @@
-from .context import metrics, helpers
+from .context import metrics
+from pairwise.helpers import DATA_SET_A, DATA_SET_B, DATA_SET_C
 
 
 def test_precision():
@@ -7,7 +8,7 @@ def test_precision():
     :return:
     """
     print("[ CHECK ] : {}".format("Precision"))
-    assert metrics.precision(helpers.DATA_SET_A['Y'], helpers.DATA_SET_A['YP']) == helpers.DATA_SET_A['P']
+    assert metrics.precision(DATA_SET_A['Y'], DATA_SET_A['YP']) == DATA_SET_A['P']
 
 
 def test_recall():
@@ -16,7 +17,7 @@ def test_recall():
     :return:
     """
     print("[ CHECK ] : {}".format("Recall"))
-    assert metrics.recall(helpers.DATA_SET_A['Y'], helpers.DATA_SET_A['YP']) == helpers.DATA_SET_A['R']
+    assert metrics.recall(DATA_SET_A['Y'], DATA_SET_A['YP']) == DATA_SET_A['R']
 
 
 def test_confusion_stats():
@@ -24,11 +25,11 @@ def test_confusion_stats():
     Test pairwise.metrics.confusion_matrix_values()
     :return:
     """
-    stats = metrics.confusion_matrix_values(helpers.DATA_SET_A['Y'], helpers.DATA_SET_A['YP'])
+    stats = metrics.confusion_matrix_values(DATA_SET_A['Y'], DATA_SET_A['YP'])
 
     for key in stats.keys():
         print("[ CHECK ] : {}".format(key))
-        assert stats[key] == helpers.DATA_SET_A['stats'][key]
+        assert stats[key] == DATA_SET_A['stats'][key]
 
 
 def test_f1score():
@@ -37,7 +38,7 @@ def test_f1score():
     :return:
     """
     print("[ CHECK ] : {}".format("F1-Score"))
-    assert metrics.f1score(helpers.DATA_SET_A['Y'], helpers.DATA_SET_A['YP']) == helpers.DATA_SET_A['F1']
+    assert metrics.f1score(DATA_SET_A['Y'], DATA_SET_A['YP']) == DATA_SET_A['F1']
 
 
 def test_accuracy():
@@ -46,7 +47,7 @@ def test_accuracy():
     :return:
     """
     print("[ CHECK ] : {}".format("Accuracy"))
-    assert metrics.accuracy(helpers.DATA_SET_A['Y'], helpers.DATA_SET_A['YP']) == helpers.DATA_SET_A['Acc']
+    assert metrics.accuracy(DATA_SET_A['Y'], DATA_SET_A['YP']) == DATA_SET_A['Acc']
 
 
 def test_specificity():
