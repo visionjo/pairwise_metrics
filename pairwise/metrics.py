@@ -1,4 +1,5 @@
 import numpy as np
+import pairwise.helpers as helpers
 # Calculate pair-wise metrics.
 #
 # Note, all metrics handle pairwise relationships (i.e., counting pairs)
@@ -140,7 +141,7 @@ def precision(true_ids, cluster_ids):
                 stats['TP'] += nchoosek(npresent, 2)
     stats['FP'] = total_positive - stats['TP']
     stats['precision'] = stats['TP'] / (stats['TP'] + stats['FP'])
-    return stats
+    return stats['precision']
 
 
 def recall(true_ids, cluster_ids):
@@ -205,20 +206,14 @@ def recall(true_ids, cluster_ids):
 
     stats['TN'] = npairs - stats['FP'] - stats['TP'] - stats['FN']
     stats['recall'] = stats['TP'] / (stats['TP'] + stats['FN'])
-    return stats
+    return stats['recall']
 
 
 if __name__ == '__main__':
-    sample_clusters = np.array([0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 2, 2, 1, 2, 2, 2])
-    N = len(sample_clusters)
-    k = len(np.unique(sample_clusters))
-
-    true_labels = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2])
-
-    classes = np.unique(true_labels)
+    DATA_SET_A = helpers.DATA_SET_A
     stats = {}
-    print('Cluster {} samples into {} clusters from {} classes'.format(N, k, len(classes)))
-    stats['precision'] = precision(true_labels, sample_clusters)
-    stats['recall'] = recall(true_labels, sample_clusters)
-    stats['confusion'] = confusion_matrix_values(true_labels, sample_clusters)
+    print('{} samples in {} clusters from {} classes'.format(DATA_SET_A['N'], DATA_SET_A['K'], DATA_SET_A['NC']))
+    stats['precision'] = precision(DATA_SET_A['Y'], DATA_SET_A['YP'])
+    stats['recall'] = recall(DATA_SET_A['Y'], DATA_SET_A['YP'])
+    stats['confusion'] = confusion_matrix_values(DATA_SET_A['Y'], DATA_SET_A['YP'])
     print(stats)
