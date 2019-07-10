@@ -20,20 +20,6 @@ import pairwise.helpers as helpers
 # TP: true positive, TN: true negative, 
 # FP: false positive, FN: false negative
 # 
-# Confusion Matrices:
-# cluster_confusion  -   confusion matrix sorted by cluster
-# class_confusion   -   confusion matrix sorted by classes
-# 
-# Settings/ Params:
-# nclasses                                    No. of true classes
-# clabels                                     true class labels
-# k                                           No. of clusters
-# ids                                         cluster assignments
-# 
-# TODO
-# - add additional pairwise metric
-#   e.g., stats.random_index = (TP + TN)/(TP + FP + FN + TN) avg. accuracy 
-#
 # @author Joseph P. Robinson
 # @date 2019 July 12
 from math import factorial
