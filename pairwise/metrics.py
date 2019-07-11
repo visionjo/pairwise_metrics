@@ -38,14 +38,20 @@ def nchoosek(n, k):
     return factorial(n) / (factorial(k) * factorial(n - k))
 
 
-def calculate_tp(sample_assignments):
+def calculate_tp(true_ids, cluster_ids):
     """
     Calculate the number of TP for a set of cluster assignments.
     :param sample_assignments: Key-Value corresponding to cluster ID - list of labels for samples cluster ID contains.s
     :return: Number of true positives.
     """
-    raise NotImplemented
-
+    true_ids = label_encoder(true_ids)
+    cluster_ids = label_encoder(cluster_ids)
+    tp = 0
+    for i, cluster_id in enumerate(cluster_ids):
+        cluster = cluster_ids[cluster_ids == cluster_id]
+        class_bins, _ = np.histogram(cluster, len(range(np.unique(cluster)))
+        tp += sum(nchoosek(c, 2) for c in class_bins if c > 1)
+    return tp
 
 def label_encoder(labels):
     le = LabelEncoder()
@@ -84,7 +90,7 @@ def confusion_matrix_values(true_ids, cluster_ids):
             if npresent > 1:
                 # if more than single sample for given class in respective cluster
                 stats['TP'] += nchoosek(npresent, 2)
-
+    stats['TP'] = calculate_tp(true_ids, cluster_ids)
     nsamples_per_cluster, _ = np.histogram(cluster_ids, range(len(cluster_refs) + 1))
     total_positive = sum(nchoosek(val, 2) for val in nsamples_per_cluster)
 
