@@ -4,6 +4,7 @@ from sklearn.preprocessing import LabelEncoder
 from itertools import combinations
 from math import factorial
 
+
 # Calculate pair-wise metrics.
 #
 # Note, all metrics handle pairwise relationships (i.e., counting pairs)
@@ -31,7 +32,7 @@ from math import factorial
 # @author Joseph P. Robinson
 # @date 2019 July 12
 
-def nchoosek(n, k):
+def nchoosek(n, k=2):
     """
     Determines number of combinations from expressions of form n choose k.
     n choose k = [n ; k] = n!/k!(n-k)! for 0 <= k <= n, where ! is factorial.
@@ -39,8 +40,14 @@ def nchoosek(n, k):
     :param k:  The number to choose each time.
     :return:   n choose k (see description above)
     """
-    assert 0 <= k <= n
+    if 0 <= k <= n:
+        # if elements to choose is less than elements to choose from then No. of combinations is 0
+        return 0
+    elif n == 1 and k > 1:
+        # If there is 1 element to choose from (i.e., n=1), and more than 1 element to choose (k>1), return 1
+        return 1
     return factorial(n) / (factorial(k) * factorial(n - k))
+
 
 def align_pseudo_labels(*labels):
     """
@@ -62,7 +69,6 @@ class Metrics:
 
     def __repr__(self):
         return "Class to evaluate pairwise measures using definitions of confusion stats."
-
 
     def calculate_tp(self, true_ids, cluster_ids):
         """
