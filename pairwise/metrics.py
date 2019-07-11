@@ -1,6 +1,7 @@
 import numpy as np
 import pairwise.helpers as helpers
 from sklearn.preprocessing import LabelEncoder
+from itertools import combinations
 # Calculate pair-wise metrics.
 #
 # Note, all metrics handle pairwise relationships (i.e., counting pairs)
@@ -69,6 +70,29 @@ def calculate_tp(true_ids, cluster_ids):
         tp += sum(nchoosek(c, 2) for c in counts if c > 1)
     return tp
 
+
+def calculate_fp(true_ids, cluster_ids):
+    """
+    Calculate the number of FP for a set of cluster assignments.
+    :param sample_assignments: Key-Value corresponding to cluster ID - list of labels for samples cluster ID contains.s
+    :return: Number of true positives.
+    """
+    # calibrate labels such to start from 0,.., M, where M is # of unique labels
+    true_ids, cluster_ids = align_pseudo_labels(true_ids, cluster_ids)
+
+    fp = 0  # FP (running sum)
+    for i, cluster_id in enumerate(np.unique(cluster_ids)):
+        # for each cluster, determine contents wrt to true labels
+        cluster = true_ids[cluster_ids == cluster_id]
+        # how many of each label type
+        unique, counts = np.unique(cluster, return_counts=True)
+        pairs = list(combinations(unique, 2))
+        lut = dict(zip(unique, counts))
+        # sum of products from each count for each class
+        fp += sum(lut[pair[0]]*lut[pair[1]] for pair in pairs)
+    return fp
+
+
 def calculate_fn(true_ids, cluster_ids):
     """
     Calculate the number of FN for a set of cluster assignments.
@@ -78,7 +102,7 @@ def calculate_fn(true_ids, cluster_ids):
     # calibrate labels such to start from 0,.., M, where M is # of unique labels
     true_ids, cluster_ids = align_pseudo_labels(true_ids, cluster_ids)
 
-    fn = 0  # TP (running sum)
+    fn = 0  # FN (running sum)
     for i, cluster_id in enumerate(np.sort(np.unique(cluster_ids)[:-1])):
         # for each cluster, determine contents wrt to true labels
         cluster = true_ids[cluster_ids == cluster_id]
@@ -127,8 +151,8 @@ def confusion_matrix_values(true_ids, cluster_ids):
     stats['TP'] = calculate_tp(true_ids, cluster_ids)
     nsamples_per_cluster, _ = np.histogram(cluster_ids, range(len(cluster_refs) + 1))
     total_positive = sum(nchoosek(val, 2) for val in nsamples_per_cluster)
-
-    stats['FP'] = total_positive - stats['TP']
+    stats['FP'] = calculate_fp(true_ids, cluster_ids)
+    # stats['FP'] = total_positive - stats['TP']
 
     stats['FN'] = calculate_fn(true_ids, cluster_ids)
 
