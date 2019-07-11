@@ -1,14 +1,15 @@
-from .context import metrics
+import pytest
+from .context import Metrics, nchoosek
 from pairwise.helpers import DATA_SET_A, DATA_SET_B, DATA_SET_C
 
-
+mm = Metrics()
 def test_precision():
     """
     Test pairwise.metrics.precision()
     :return:
     """
     print("[ CHECK ] : {}".format("Precision"))
-    assert metrics.precision(DATA_SET_A['Y'], DATA_SET_A['YP']) == DATA_SET_A['P']
+    assert mm.precision(DATA_SET_A['Y'], DATA_SET_A['YP']) == DATA_SET_A['P']
 
 
 def test_recall():
@@ -17,7 +18,7 @@ def test_recall():
     :return:
     """
     print("[ CHECK ] : {}".format("Recall"))
-    assert metrics.recall(DATA_SET_A['Y'], DATA_SET_A['YP']) == DATA_SET_A['R']
+    assert mm.recall(DATA_SET_A['Y'], DATA_SET_A['YP']) == DATA_SET_A['R']
 
 
 def test_confusion_stats():
@@ -25,7 +26,7 @@ def test_confusion_stats():
     Test pairwise.metrics.confusion_matrix_values()
     :return:
     """
-    stats = metrics.confusion_matrix_values(DATA_SET_A['Y'], DATA_SET_A['YP'])
+    stats = mm.confusion_matrix_values(DATA_SET_A['Y'], DATA_SET_A['YP'])
 
     for key in stats.keys():
         print("[ CHECK ] : {}".format(key))
@@ -38,7 +39,7 @@ def test_f1score():
     :return:
     """
     print("[ CHECK ] : {}".format("F1-Score"))
-    assert metrics.f1score(DATA_SET_A['Y'], DATA_SET_A['YP']) == DATA_SET_A['F1']
+    assert mm.f1score(DATA_SET_A['Y'], DATA_SET_A['YP']) == DATA_SET_A['F1']
 
 
 def test_accuracy():
@@ -47,7 +48,7 @@ def test_accuracy():
     :return:
     """
     print("[ CHECK ] : {}".format("Accuracy"))
-    assert metrics.accuracy(DATA_SET_A['Y'], DATA_SET_A['YP']) == DATA_SET_A['Acc']
+    assert mm.accuracy(DATA_SET_A['Y'], DATA_SET_A['YP']) == DATA_SET_A['Acc']
 
 
 def test_specificity():
@@ -57,3 +58,13 @@ def test_specificity():
     """
     print("[ CHECK ] : {}".format("Specificity"))
     pass
+
+
+@pytest.mark.parametrize(["n", "expected"], [[1, 0], [2, 1], [4, 6], [10, 45]])
+def test_nchoosek(n, expected):
+    """
+    Test nchoosek with list of pairs to pass in as parameters
+    :param n:           n to pass into to nchoosek(n, k=2)
+    :param expected:    result calculated and hard-coded for testing
+    """
+    assert nchoosek(n) == expected
