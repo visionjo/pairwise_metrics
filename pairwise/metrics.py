@@ -20,7 +20,11 @@ from sklearn.preprocessing import LabelEncoder
 #
 # TP: true positive, TN: true negative, 
 # FP: false positive, FN: false negative
-# 
+#
+# A true positive (TP) when documents are in the same cluster, a true negative (TN) when two dissimilar documents are in
+# different clusters. Two types of errors: A (FP) decision is when two dissimilar documents are in the same cluster. A
+# (FN) decision is when two similar documents are in different clusters.
+#
 # @author Joseph P. Robinson
 # @date 2019 July 12
 from math import factorial
@@ -127,7 +131,6 @@ def confusion_matrix_values(true_ids, cluster_ids):
     stats['FP'] = total_positive - stats['TP']
 
     stats['FN'] = calculate_fn(true_ids, cluster_ids)
-    # sum(npairs_per_class) - stats['TP']
 
     stats['TN'] = nchoosek(len(true_ids), 2) - stats['FP'] - stats['TP'] - stats['FN']
 
