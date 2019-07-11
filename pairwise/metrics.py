@@ -40,10 +40,10 @@ def nchoosek(n, k=2):
     :param k:  The number to choose each time.
     :return:   n choose k (see description above)
     """
-    if 0 <= k <= n:
+    if k > n or k==0:
         # if elements to choose is less than elements to choose from then No. of combinations is 0
         return 0
-    elif n == 1 and k > 1:
+    elif n == 1 and k == 1:
         # If there is 1 element to choose from (i.e., n=1), and more than 1 element to choose (k>1), return 1
         return 1
     return factorial(n) / (factorial(k) * factorial(n - k))

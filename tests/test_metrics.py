@@ -59,6 +59,12 @@ def test_specificity():
     print("[ CHECK ] : {}".format("Specificity"))
     pass
 
+
 @pytest.mark.parametrize(["n", "expected"], [[1, 0], [2, 1], [4, 6], [10, 45]])
 def test_nchoosek(n, expected):
-    assert nchoosek(n) == expected #Success
+    """
+    Test nchoosek with list of pairs to pass in as parameters
+    :param n:           n to pass into to nchoosek(n, k=2)
+    :param expected:    result calculated and hard-coded for testing
+    """
+    assert nchoosek(n) == expected
