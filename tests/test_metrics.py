@@ -1,4 +1,5 @@
-from .context import Metrics
+import pytest
+from .context import Metrics, nchoosek
 from pairwise.helpers import DATA_SET_A, DATA_SET_B, DATA_SET_C
 
 mm = Metrics()
@@ -57,3 +58,7 @@ def test_specificity():
     """
     print("[ CHECK ] : {}".format("Specificity"))
     pass
+
+@pytest.mark.parametrize(["n", "expected"], [[1, 0], [2, 1], [4, 6], [10, 45]])
+def test_nchoosek(n, expected):
+    assert nchoosek(n) == expected #Success
