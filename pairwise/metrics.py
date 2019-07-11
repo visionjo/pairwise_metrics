@@ -65,6 +65,37 @@ def calculate_tp(true_ids, cluster_ids):
         tp += sum(nchoosek(c, 2) for c in counts if c > 1)
     return tp
 
+def calculate_fn(true_ids, cluster_ids):
+    """
+    Calculate the number of FN for a set of cluster assignments.
+    :param sample_assignments: Key-Value corresponding to cluster ID - list of labels for samples cluster ID contains.s
+    :return: Number of true positives.
+    """
+    # calibrate labels such to start from 0,.., M, where M is # of unique labels
+    true_ids, cluster_ids = align_pseudo_labels(true_ids, cluster_ids)
+
+    fn = 0  # TP (running sum)
+    for i, cluster_id in enumerate(np.sort(np.unique(cluster_ids)[:-1])):
+        # for each cluster, determine contents wrt to true labels
+        cluster = true_ids[cluster_ids == cluster_id]
+        # only look at larger values to not count same pair 2x (i.e., not look back, as prior already was calculated.
+        another = true_ids[cluster_ids > cluster_id]
+        # how many of each label in current cluster
+        unique, counts = np.unique(cluster, return_counts=True)
+        # how many of each in other clusters
+        other_unique, other_counts = np.unique(another, return_counts=True)
+
+        # make dictionaries and determine common keys to count
+        lut = dict(zip(unique, counts))
+        other_lut = dict(zip(other_unique, other_counts))
+
+        common = list(set(lut.keys()).intersection(set(other_lut.keys())))
+
+        for key in common:
+            # number of elements in current * number outside
+            fn += lut[key]*other_lut[key]
+
+    return fn
 
 def label_encoder(labels):
     le = LabelEncoder()
@@ -95,7 +126,8 @@ def confusion_matrix_values(true_ids, cluster_ids):
 
     stats['FP'] = total_positive - stats['TP']
 
-    stats['FN'] = sum(npairs_per_class) - stats['TP']
+    stats['FN'] = calculate_fn(true_ids, cluster_ids)
+    # sum(npairs_per_class) - stats['TP']
 
     stats['TN'] = nchoosek(len(true_ids), 2) - stats['FP'] - stats['TP'] - stats['FN']
 
