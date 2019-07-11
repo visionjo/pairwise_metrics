@@ -44,13 +44,17 @@ def calculate_tp(true_ids, cluster_ids):
     :param sample_assignments: Key-Value corresponding to cluster ID - list of labels for samples cluster ID contains.s
     :return: Number of true positives.
     """
+    # calibrate labels such to start from 0,.., M, where M is # of unique labels
     true_ids = label_encoder(true_ids)
     cluster_ids = label_encoder(cluster_ids)
-    tp = 0
-    for i, cluster_id in enumerate(cluster_ids):
-        cluster = cluster_ids[cluster_ids == cluster_id]
-        class_bins, _ = np.histogram(cluster, len(range(np.unique(cluster)))
-        tp += sum(nchoosek(c, 2) for c in class_bins if c > 1)
+    tp = 0  # TP (running sum)
+    for i, cluster_id in enumerate(np.unique(cluster_ids)):
+        # for each cluster, determine contents wrt to true labels
+        cluster = true_ids[cluster_ids == cluster_id]
+        # how many of each label type
+        unique, counts = np.unique(cluster, return_counts=True)
+        # count pairs for bins with more than 1 sample (i.e., 1 sample = 0 pairs, 0!)
+        tp += sum(nchoosek(c, 2) for c in counts if c > 1)
     return tp
 
 def label_encoder(labels):
