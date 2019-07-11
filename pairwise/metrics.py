@@ -37,6 +37,14 @@ def nchoosek(n, k):
     assert 0 <= k <= n
     return factorial(n) / (factorial(k) * factorial(n - k))
 
+def align_pseudo_labels(*labels):
+    """
+    Utility function that aligns variable number of label lists, i.e.,
+        true_ids,cluster_ids=align_pseudo_labels(true_ids, cluster_ids)
+    :param labels:
+    :return:
+    """
+    return (label_encoder(l) for l in labels)
 
 def calculate_tp(true_ids, cluster_ids):
     """
@@ -45,8 +53,8 @@ def calculate_tp(true_ids, cluster_ids):
     :return: Number of true positives.
     """
     # calibrate labels such to start from 0,.., M, where M is # of unique labels
-    true_ids = label_encoder(true_ids)
-    cluster_ids = label_encoder(cluster_ids)
+    true_ids, cluster_ids = align_pseudo_labels(true_ids, cluster_ids)
+
     tp = 0  # TP (running sum)
     for i, cluster_id in enumerate(np.unique(cluster_ids)):
         # for each cluster, determine contents wrt to true labels
@@ -71,9 +79,8 @@ def confusion_matrix_values(true_ids, cluster_ids):
     :param clabels:     Cluster assignment [ Nx1 ].
     :return: Confusion stats {TP, FP, TN, FN} (dictionary)
     """
-    true_ids = label_encoder(true_ids)
-    cluster_ids = label_encoder(cluster_ids)
-    
+    true_ids, cluster_ids = align_pseudo_labels(true_ids, cluster_ids)
+
     stats = {}
     cluster_refs = np.unique(cluster_ids)
     nclasses = len(np.unique(true_ids))
