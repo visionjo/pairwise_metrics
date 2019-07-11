@@ -141,22 +141,13 @@ def confusion_matrix_values(true_ids, cluster_ids):
     true_ids, cluster_ids = align_pseudo_labels(true_ids, cluster_ids)
 
     stats = {}
-    cluster_refs = np.unique(cluster_ids)
-    nclasses = len(np.unique(true_ids))
-
-    nsamples_per_class, _ = np.histogram(true_ids, range(nclasses + 1))
-    npairs_per_class = [nchoosek(val, 2) for val in nsamples_per_class]
-
-
     stats['TP'] = calculate_tp(true_ids, cluster_ids)
-    nsamples_per_cluster, _ = np.histogram(cluster_ids, range(len(cluster_refs) + 1))
-    total_positive = sum(nchoosek(val, 2) for val in nsamples_per_cluster)
     stats['FP'] = calculate_fp(true_ids, cluster_ids)
-    # stats['FP'] = total_positive - stats['TP']
-
     stats['FN'] = calculate_fn(true_ids, cluster_ids)
-
-    stats['TN'] = nchoosek(len(true_ids), 2) - stats['FP'] - stats['TP'] - stats['FN']
+    npairs = nchoosek(len(true_ids), 2)     # total number of pairs
+    npositive = stats['FP'] + stats['TP']   # total number of positive pairs
+    nnegative = npairs - npositive           # total number of negative pairs
+    stats['TN'] = nnegative - stats['FN']
 
     return stats
 
